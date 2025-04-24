@@ -1,23 +1,29 @@
 import express from "express";
-import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import todoRoutes from "./routes/todoRoutes.js";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 5000;
+
+// Middleware
 app.use(express.json());
 
-// MongoDB connect
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ Kết nối MongoDB thành công"))
-  .catch((err) => console.error("❌ Lỗi kết nối MongoDB:", err));
-// Routes
-import todoRoutes from "./routes/todoRoutes.js";
+// Route mặc định để kiểm tra server
+app.get("/", (req, res) => {
+  res.send("✅ Server is running...");
+});
+
+// API routes
 app.use("/api/todos", todoRoutes);
 
-// Start server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
+// Kết nối MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
