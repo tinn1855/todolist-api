@@ -12,9 +12,8 @@ app.use(express.json());
 // MongoDB connect
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
+  .then(() => console.log("✅ Kết nối MongoDB thành công"))
+  .catch((err) => console.error("❌ Lỗi kết nối MongoDB:", err));
 // Routes
 import todoRoutes from "./routes/todoRoutes.js";
 app.use("/api/todos", todoRoutes);
