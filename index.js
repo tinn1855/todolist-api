@@ -6,13 +6,14 @@ import todoRoutes from "./routes/todoRoutes.js";
 
 const START_SERVER = () => {
   const app = express();
+  const port = process.env.APP_PORT || 4000;
 
   app.use(express.json());
 
   app.use("/api/todos", todoRoutes);
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`Server running at http://${env.APP_HOST}:${env.APP_PORT}`);
+  app.listen(port, env.APP_HOST, () => {
+    console.log(`Server running at http://${env.APP_HOST}:${port}`);
   });
 
   exitHook(() => {
