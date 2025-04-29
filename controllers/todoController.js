@@ -36,14 +36,42 @@ export const createTodo = async (req, res) => {
 export const updateTodo = async (req, res) => {
   try {
     const { id } = req.params;
-    const updated = await Todo.findByIdAndUpdate(id, req.body, { new: true });
-    if (!updated) return res.status(404).json({ message: "Not found" });
-    res.json(updated);
+    const { title, status, priority } = req.body;
+
+    // Check nếu không có id
+    if (!id) {
+      return res
+        .status(400)
+        .json({ message: "Missing todo ID in request params." });
+    }
+
+    // Check id có đúng định dạng MongoDB ObjectId không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid todo ID format." });
+    }
+
+    // Check nếu không có gì để update
+    if (!title && !status && !priority) {
+      return res.status(400).json({ message: "No update data provided." });
+    }
+
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      { title, status, priority },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ message: "Todo not found." });
+    }
+
+    res.json(updatedTodo);
   } catch (error) {
-    res.status(500).json({ message: "Error updating todo", error });
+    res
+      .status(500)
+      .json({ message: "Error updating todo", error: error.message });
   }
 };
-
 // DELETE todo
 export const deleteTodo = async (req, res) => {
   try {
