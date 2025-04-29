@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Todo from "../models/todo.js";
 
 // GET all todos
