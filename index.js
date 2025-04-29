@@ -9,6 +9,7 @@ const START_SERVER = () => {
   const port = env.APP_PORT || 4000;
 
   app.use(express.json());
+  app.use(cors()); // Cho phép tất cả các domain
 
   app.use("/api/todos", todoRoutes);
 
