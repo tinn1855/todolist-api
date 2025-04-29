@@ -1,29 +1,30 @@
 import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import exitHook from "async-exit-hook";
+import { CONNECT_DB, CLOSE_DB } from "./config/db.js";
+import { env } from "./config/environment.js";
 import todoRoutes from "./routes/todoRoutes.js";
 
-dotenv.config();
+const START_SERVER = () => {
+  const app = express();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+  app.use(express.json());
 
-// Middleware
-app.use(express.json());
+  app.use("/api/todos", todoRoutes);
 
-// Route mặc định để kiểm tra server
-app.get("/", (req, res) => {
-  res.send("✅ Server is running...");
-});
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    console.log(`Server running at http://${env.APP_HOST}:${env.APP_PORT}`);
+  });
 
-// API routes
-app.use("/api/todos", todoRoutes);
+  exitHook(() => {
+    CLOSE_DB();
+    console.log("Disconnected");
+  });
+};
 
-// Kết nối MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+CONNECT_DB()
+  .then(() => console.log("Connected to MongoDB Cloud Atlas!"))
+  .then(() => START_SERVER())
+  .catch((error) => {
+    console.log(error);
+    process.exit(0);
+  });

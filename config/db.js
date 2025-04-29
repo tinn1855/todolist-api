@@ -1,13 +1,28 @@
 import mongoose from "mongoose";
+import { env } from "./environment.js";
 
-const connectDB = async () => {
+// Kết nối MongoDB bằng Mongoose
+export const CONNECT_DB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("✅ MongoDB connected successfully!");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1);
+    await mongoose.connect(env.MONGODB_URI, {
+      dbName: env.DATABASE_NAME,
+    });
+    console.log("Connected to MongoDB!");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1); // Thoát nếu không kết nối được
   }
 };
 
-export default connectDB;
+// Lấy instance của database
+export const GET_DB = () => mongoose.connection;
+
+// Đóng kết nối MongoDB
+export const CLOSE_DB = async () => {
+  try {
+    await mongoose.connection.close();
+    console.log("MongoDB connection closed.");
+  } catch (error) {
+    console.error("Error closing MongoDB connection:", error);
+  }
+};
